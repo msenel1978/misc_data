@@ -1,21 +1,21 @@
 import unicodecsv
 
-enrollments = []
 
-def read_csvfile():
+def read_csvfile(filename):
     
-    f = open('enrollments.csv', 'rb')
+    with open(filename, 'rb') as f:
+        reader = unicodecsv.DictReader(f)
+        return list(reader)
 
-    reader = unicodecsv.DictReader(f)
-
-    for row in reader:
-        enrollments.append(row)
-
-    f.close()
-
-    print(enrollments[0:3])
 
 
 
 if __name__ == "__main__":
-    read_csvfile()
+    enrollments = read_csvfile('enrollments.csv') 
+    print(enrollments[0:3])
+
+    daily_engagement = read_csvfile('daily_engagement.csv')
+    print(daily_engagement[0:3])
+
+    project_submissions = read_csvfile('project_submissions.csv')
+    print(project_submissions[0:3]) 
