@@ -42,6 +42,7 @@ if __name__ == "__main__":
         enrollment['join_date'] = parse_date(enrollment['join_date'])
 
     print('\nData Processed - Enrollments:\n')
+    print('Number of columns: {}\n'.format(len(enrollments)))
     print(enrollments[0])
 
     # Clean up the data types in the engagement table
@@ -53,6 +54,7 @@ if __name__ == "__main__":
         engagement_record['utc_date'] = parse_date(engagement_record['utc_date'])
 
     print('\nData Processed - Engagement:\n')
+    print('Number of columns: {}\n'.format(len(daily_engagement)))
     print(daily_engagement[0])
 
     # Clean up the data types in the submissions table
@@ -61,5 +63,6 @@ if __name__ == "__main__":
         submission['creation_date'] = parse_date(submission['creation_date'])
  
     print('\nData Processed - Submission:\n')
+    print('Number of columns: {}\n'.format(len(project_submissions)))
     print(project_submissions[0])
                             
