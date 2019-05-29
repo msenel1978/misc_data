@@ -24,6 +24,13 @@ def parse_maybe_int(i):
     else:
         return int(i)
 
+def get_unique_students(data):
+    unique_students = set()
+    for student_record in data:
+        unique_students.add(student_record['account_key'])
+
+    return unique_students
+
 if __name__ == "__main__":
     enrollments = read_csvfile('enrollments.csv') 
     print(enrollments[0])
@@ -42,11 +49,10 @@ if __name__ == "__main__":
         enrollment['is_canceled'] = (enrollment['is_canceled'] == 'True')
         enrollment['is_udacity'] = (enrollment['is_udacity'] == 'True')
         enrollment['join_date'] = parse_date(enrollment['join_date'])
-        unique_enrolled_students.add(enrollment['account_key']) 
 
     print('\nData Processed - Enrollments:\n')
     print('Number of columns: {}\n'.format(len(enrollments)))
-    print('Number of enrolled students: {}\n'.format(len(unique_enrolled_students)))
+    print('Number of enrolled students: {}\n'.format(len(get_unique_students(enrollments))))
     print(enrollments[0])
     #print(unique_enrolled_students)
 
@@ -58,11 +64,12 @@ if __name__ == "__main__":
         engagement_record['projects_completed'] = int(float(engagement_record['projects_completed']))
         engagement_record['total_minutes_visited'] = float(engagement_record['total_minutes_visited'])
         engagement_record['utc_date'] = parse_date(engagement_record['utc_date'])
-        unique_engaged_students.add(engagement_record['acct'])
+        engagement_record['account_key'] = engagement_record['acct']
+        del engagement_record['acct']
 
     print('\nData Processed - Engagement:\n')
     print('Number of columns: {}\n'.format(len(daily_engagement)))
-    print('Number of engaged students: {}\n'.format(len(unique_engaged_students)))
+    print('Number of engaged students: {}\n'.format(len(get_unique_students(daily_engagement))))
     print(daily_engagement[0])
 
     unique_project_submitters = set()
@@ -70,10 +77,9 @@ if __name__ == "__main__":
     for submission in project_submissions:
         submission['completion_date'] = parse_date(submission['completion_date'])
         submission['creation_date'] = parse_date(submission['creation_date'])
-        unique_project_submitters.add(submission['account_key']) 
  
     print('\nData Processed - Submission:\n')
     print('Number of columns: {}\n'.format(len(project_submissions)))
-    print('Number of project submitters: {}\n'.format(len(unique_project_submitters)))
+    print('Number of project submitters: {}\n'.format(len(get_unique_students(project_submissions))))
     print(project_submissions[0])
                             
