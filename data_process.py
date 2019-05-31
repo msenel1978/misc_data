@@ -1,35 +1,4 @@
-import unicodecsv
-from datetime import datetime as dt
-
-# Reads the csv file
-def read_csvfile(filename):
-    
-    with open(filename, 'rb') as f:
-        reader = unicodecsv.DictReader(f)
-        return list(reader)
-
-# Takes a date as a string, and returns a Python datetime object. 
-# If there is no date given, returns None
-def parse_date(date):
-    if date =='':
-        return None
-    else:
-        return dt.strptime(date, '%Y-%m-%d')
-
-# Takes a string which is either an empty string or represents an integer,
-# and returns an int or None.
-def parse_maybe_int(i):
-    if i == '':
-        return None
-    else:
-        return int(i)
-
-def get_unique_students(data):
-    unique_students = set()
-    for student_record in data:
-        unique_students.add(student_record['account_key'])
-
-    return unique_students
+from data_utilities import *
 
 if __name__ == "__main__":
     enrollments = read_csvfile('enrollments.csv') 
@@ -41,7 +10,6 @@ if __name__ == "__main__":
     project_submissions = read_csvfile('project_submissions.csv')
     print(project_submissions[0])
 
-    unique_enrolled_students = set()
     # Clean up the data
     for enrollment in enrollments:
         enrollment['cancel_date'] = parse_date(enrollment['cancel_date'])
@@ -56,7 +24,6 @@ if __name__ == "__main__":
     print(enrollments[0])
     #print(unique_enrolled_students)
 
-    unique_engaged_students = set()
     # Clean up the data types in the engagement table
     for engagement_record in daily_engagement:
         engagement_record['lessons_completed'] = int(float(engagement_record['lessons_completed']))
@@ -69,10 +36,11 @@ if __name__ == "__main__":
 
     print('\nData Processed - Engagement:\n')
     print('Number of columns: {}\n'.format(len(daily_engagement)))
-    print('Number of engaged students: {}\n'.format(len(get_unique_students(daily_engagement))))
+
+    unique_engagement_students = get_unique_students(daily_engagement)
+    print('Number of engaged students: {}\n'.format(len(unique_engagement_students)))
     print(daily_engagement[0])
 
-    unique_project_submitters = set()
     # Clean up the data types in the submissions table
     for submission in project_submissions:
         submission['completion_date'] = parse_date(submission['completion_date'])
@@ -82,4 +50,19 @@ if __name__ == "__main__":
     print('Number of columns: {}\n'.format(len(project_submissions)))
     print('Number of project submitters: {}\n'.format(len(get_unique_students(project_submissions))))
     print(project_submissions[0])
-                            
+
+    # Student missing in daily engagement
+    num_problem_students = 0
+    for enrollment in enrollments:
+        student = enrollment['account_key']
+        if (student not in unique_engagement_students) and \
+            (enrollment['join_date'] != enrollment['cancel_date']):
+           num_problem_students+=1
+           print(enrollment)
+            # Print only 10 of such students
+            #if cnt == 10:
+            #    break
+    print('\nMissing students with days_to_cancel != 0: {}\n'.format(num_problem_students))
+
+
+
