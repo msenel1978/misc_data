@@ -64,5 +64,18 @@ if __name__ == "__main__":
             #    break
     print('\nMissing students with days_to_cancel != 0: {}\n'.format(num_problem_students))
 
+    # Udacity test accounts
+    udacity_test_accounts = set()
+    for enrollment in enrollments:
+        if enrollment['is_udacity']:
+            udacity_test_accounts.add(enrollment['account_key'])
+    print('\nUdacity test accounts: {}\n'.format(len(udacity_test_accounts)))
 
+    non_udacity_enrollments = remove_udacity_accounts(enrollments, udacity_test_accounts)
+    non_udacity_engagement = remove_udacity_accounts(daily_engagement, udacity_test_accounts)
+    non_udacity_submissions = remove_udacity_accounts(project_submissions, udacity_test_accounts)
+
+    print('Number of non-Udacity enrollments: {}\n'.format(len(non_udacity_enrollments)))
+    print('Number of non-Udacity engaged students: {}\n'.format(len(non_udacity_engagement)))
+    print('Number of non-Udacity project submitters: {}\n'.format(len(non_udacity_submissions)))
 
