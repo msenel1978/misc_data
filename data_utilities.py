@@ -36,3 +36,25 @@ def remove_udacity_accounts(data, test_accounts):
         if data_point['account_key'] not in test_accounts:
         	non_udacity_data.append(data_point)
     return non_udacity_data
+
+# Find paid students
+def find_paid_sudents(enrollment_data):
+
+    paid = {}
+
+    for student in enrollment_data:
+        if (student['days_to_cancel'] is None) or \
+                        (student['days_to_cancel'] > 7):
+            account_key = student['account_key']
+            enrollment_date = student['join_date']
+
+            if (account_key not in paid) or (enrollment_date > paid[account_key]):
+                paid[account_key] = enrollment_date
+    return paid
+
+# Takes a student's join date and the date of a specific engagement record,
+# and returns True if that engagement record happened within one week
+# of the student joining.
+def within_one_week(join_date, engagement_date):
+    time_delta = engagement_date - join_date
+    return time_delta.days < 7

@@ -79,3 +79,7 @@ if __name__ == "__main__":
     print('Number of non-Udacity engaged students: {}\n'.format(len(non_udacity_engagement)))
     print('Number of non-Udacity project submitters: {}\n'.format(len(non_udacity_submissions)))
 
+    # Paid students
+    paid_students = find_paid_sudents(non_udacity_enrollments)
+    print('Number of paid students: {}'.format(len(paid_students)))
+
