@@ -1,5 +1,8 @@
 import unicodecsv
+import numpy as np
 from datetime import datetime as dt
+from collections import defaultdict
+
 
 # Reads the csv file
 def read_csvfile(filename):
@@ -57,4 +60,76 @@ def find_paid_sudents(enrollment_data):
 # of the student joining.
 def within_one_week(join_date, engagement_date):
     time_delta = engagement_date - join_date
-    return time_delta.days < 7
+    return time_delta.days < 7 and time_delta.days >=0
+
+
+def remove_free_trial_canceled(data, students):
+    new_data = []
+
+    for data_point in data:
+        if data_point['account_key'] in students:
+            new_data.append(data_point)
+
+    return new_data
+
+def find_paid_engagement_in_first_week(paid_engagement, students):
+    first_week_paid_engagements = []
+
+    for engagement_record in paid_engagement:
+        account_key = engagement_record['account_key']
+        join_date = students[account_key]
+        engagement_record_date = engagement_record['utc_date']
+
+        if within_one_week(join_date, engagement_record_date):
+            first_week_paid_engagements.append(engagement_record)
+
+    return first_week_paid_engagements
+
+# Create a dictionary of grouped data by student.
+# The keys are key_name, and the values are lists of grouped data.
+def group_data(data, key_name):
+
+    grouped_data = defaultdict(list)
+    for data_point in data:
+        key = data_point[key_name]
+        grouped_data[key].append(data_point)
+
+    return grouped_data
+
+# Create a dictionary with the total minutes each student spent in the classroom during the first week.
+# The keys are account keys, and the values are numbers (total minutes)
+def sum_grouped_items(grouped_data, field_name):
+    summed_data = {}
+
+    for key, data_points in grouped_data.items():
+        total = 0
+        for data_point in data_points:
+            total += data_point[field_name]
+        summed_data[key] = total
+
+    return summed_data
+
+def describe_data(data):
+    print('Mean: {}'.format(np.mean(data)))
+    print 'Standard deviation:', np.std(data)
+    print 'Minimum:', np.min(data)
+    print('Maximum: {}\n'.format(np.max(data)))
+
+
+# Find the student that spends max. minutes
+def find_student_with_max_minutes(minutes_by_account):
+    max_student = None
+    max_minutes = 0
+    
+    for student, total_minutes in minutes_by_account.items():
+        if total_minutes > max_minutes:
+            max_minutes = total_minutes
+            max_student = student
+
+    #print max_minutes
+
+    return max_student, max_minutes
+
+
+
+
