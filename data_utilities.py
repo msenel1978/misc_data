@@ -2,6 +2,8 @@ import unicodecsv
 import numpy as np
 from datetime import datetime as dt
 from collections import defaultdict
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 
 # Reads the csv file
@@ -114,7 +116,10 @@ def describe_data(data):
     print 'Standard deviation:', np.std(data)
     print 'Minimum:', np.min(data)
     print('Maximum: {}\n'.format(np.max(data)))
-
+    #plt.figure()
+    plt.hist(data)
+    plt.show()
+  
 
 # Find the student that spends max. minutes
 def find_student_with_max_minutes(minutes_by_account):

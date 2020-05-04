@@ -1,6 +1,9 @@
 from data_utilities import *
+import matplotlib.pyplot as plt
+import code
 
-if __name__ == "__main__":
+def main():
+
     enrollments = read_csvfile('enrollments.csv') 
     print(enrollments[0])
 
@@ -94,6 +97,13 @@ if __name__ == "__main__":
     print('Number of paid engagement: {}'.format(len(paid_engagement)))
     print('Number of paid submissions: {}\n'.format(len(paid_submissions)))
 
+    # Add has_visited field
+    for engagement_record in paid_engagement:
+        if engagement_record['num_courses_visited'] > 0:
+            engagement_record['has_visited'] = 1
+        else:
+            engagement_record['has_visited'] = 0
+
     paid_engagement_in_first_week = find_paid_engagement_in_first_week(paid_engagement,\
                                         paid_students)
     print('Number of paid engagements in first week: {}\n'.\
@@ -120,4 +130,94 @@ if __name__ == "__main__":
                                                     'lessons_completed')
     print('\nStats of lessons_completed data')
     describe_data( total_lessons_completed_by_account.values())
+
+    # Group data by has_visited
+    days_visited_by_account = sum_grouped_items(engagement_by_account, 'has_visited')
+    #Print stats of days visited
+    print('Stats of days class visited')
+    describe_data(days_visited_by_account.values())
+
+    ###############################################################
+    # Group the students into passing/non-passing on Subway Project
+    subway_project_lesson_keys = ['746169184', '3176718735']
+    # Passing engagements
+    pass_subway_project = set()
+
+    for submission in paid_submissions:
+        project = submission['lesson_key']
+        rating = submission['assigned_rating']
+
+        #if project == subway_project_lesson_keys[0] or \
+        #        project = subway_project_lesson_keys[1]
+        if project in subway_project_lesson_keys and \
+            (rating == 'PASSED' or rating == 'DISTINCTION'):
+            pass_subway_project.add(submission['account_key'])
+
+    #len(pass_subway_project)
+
+    passing_engagement = []
+    non_passing_engagement = []
+    for engagement_record in paid_engagement_in_first_week:
+        if engagement_record['account_key'] in pass_subway_project:
+            passing_engagement.append(engagement_record)
+        else:
+            non_passing_engagement.append(engagement_record)
+    print "\nPassing engagements:", len(passing_engagement)
+    print('Non-Passing Engagement: {}\n'.format(len(non_passing_engagement)))
+
+    # Group passing / non-passing by account
+    passing_engagement_by_account = group_data(passing_engagement, 'account_key')
+    non_passing_engagement_by_account = group_data(non_passing_engagement, 'account_key')
+
+    # Stats of Passing / Not-passing Students: total_minutes_visited
+    total_minutes_of_passing = sum_grouped_items(passing_engagement_by_account,\
+                                                    'total_minutes_visited')
+    print "\nStats: Total Minutes Spent for Passing"
+    describe_data(total_minutes_of_passing.values())
+
+
+    total_minutes_of_non_passing = sum_grouped_items(non_passing_engagement_by_account,\
+                                                    'total_minutes_visited')
+    print "\nStats: Total Minutes Spent for Non-Passing"
+    describe_data(total_minutes_of_non_passing.values())
+
+    # Stats of Passing / Not-passing Students: lessons_completed
+    lessons_completed_of_passing = sum_grouped_items(passing_engagement_by_account,\
+                                                    'lessons_completed')
+    print "\nStats: Lessons Completed for Passing"
+    describe_data(lessons_completed_of_passing.values())
+
+    lessons_completed_of_non_passing = sum_grouped_items(non_passing_engagement_by_account,\
+                                                    'lessons_completed')
+    print "\nStats: Lessons Completed for Non-Passing"
+    describe_data(lessons_completed_of_non_passing.values())
+
+     # Stats of Passing / Not-passing Students: has_visited
+    has_visited_of_passing = sum_grouped_items(passing_engagement_by_account,\
+                                                    'has_visited')
+    print "\nStats: has_sisted for Passing"
+    describe_data(has_visited_of_passing.values())
+
+    has_visited_of_non_passing = sum_grouped_items(non_passing_engagement_by_account,\
+                                                    'has_visited')
+    print "\nStats: has_sisted for Non-Passing"
+    describe_data(has_visited_of_non_passing.values())
+
+    plt.figure()
+    plt.hist(has_visited_of_passing.values(), bins=8)
+    plt.xlabel('Number of days')
+    plt.title('Distribution of classroom visits in the first week ' + 
+                'for students who pass the subway project')
+    plt.show()
+
+    plt.figure()
+    plt.hist(has_visited_of_non_passing.values(), bins=8)
+    plt.xlabel('Number of days')
+    plt.title('Distribution of classroom visits in the first week ' + 
+                'for students who do not pass the subway project')
+    plt.show()
+    #code.interact(local=locals())
+
+if __name__ == "__main__":
+    main()
 
