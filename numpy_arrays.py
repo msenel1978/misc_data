@@ -266,7 +266,8 @@ def main():
          38,  98,   2, 249,   2, 127,  35
     ])
 
-    print 'Mean time spent of students enrolled >= 7 days: {}'.format(mean_time_for_paid_students(time_spent, days_to_cancel))
+    print 'Mean time spent of students enrolled >= 7 days: {}'.\
+            format(mean_time_for_paid_students(time_spent, days_to_cancel))
 
 if __name__ == "__main__":
     main()
